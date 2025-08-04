@@ -8,25 +8,29 @@ services:
     ports:
       - "4000:4000"
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     environment:
       MONGO_URI: mongodb://mongodb:27017/condominium-manager
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000", "||", "exit", "1"]
       interval: 30s
-      timeout: 3s
-      start_period: 5s
+      timeout: 5s
+      start_period: 10s
       retries: 3
 
   mongodb:
-    image: mongo:latest
+    image: mongo:6
+    container_name: mongo-condo
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
       - ./mongo-init:/docker-entrypoint-initdb.d
+    environment:
+      MONGO_INITDB_DATABASE: condominium-manager
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })", "--quiet"]
+      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })"]
       interval: 10s
       timeout: 5s
       retries: 5

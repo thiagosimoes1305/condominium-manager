@@ -26,80 +26,47 @@ git clone <repository-url>
 cd condominium-manager
 ```
 
-2. Start the entire application with Docker Compose:
+2. Install dependencies:
 ```bash
-docker-compose up -d
+npm install
 ```
 
-This will start:
-- **MongoDB** on port 27017
-- **Node.js Backend** on port 4000
-- **React Frontend** on port 3000
-- **MongoDB Express** (Web UI) on port 8081
+3. Start the entire application with Docker Compose:
+```bash
+docker-compose up --build && docker-compose up --d
+```
 
-3. Access the application:
-- **React Frontend**: http://localhost:3000
-- **GraphQL Playground**: http://localhost:4000/graphql
-- **MongoDB Express**: http://localhost:8081
-- **Health Check**: http://localhost:4000/health
+4. Start the development server:
+```bash
+npm dev
+```
 
-### Option 2: Frontend Only
-
-If you want to run just the frontend with an existing backend:
-
-1. Navigate to the frontend directory:
+5. Navigate to the frontend directory:
 ```bash
 cd frontend
 ```
 
-2. Install dependencies:
+6. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Start the development server:
+7. Start the development server:
 ```bash
 npm start
 ```
 
-The React app will be available at http://localhost:3000
+This will start:
+- **MongoDB** on port 27017
+- **Node.js Backend** on port 4000 or 4001
+- **React Frontend** on port 3000
+- **MongoDB Express** (Web UI) on port 8081
 
-### Option 3: Local Development
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd condominium-manager
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables:
-```bash
-cp env.example .env
-```
-
-Edit the `.env` file with your MongoDB connection string:
-```
-PORT=4000
-MONGODB_URI=mongodb://localhost:27017/condominium-manager
-NODE_ENV=development
-```
-
-4. Build the project:
-```bash
-npm run build
-```
-
-5. Start the development server:
-```bash
-npm run dev
-```
-
-The server will start on `http://localhost:4000` and the GraphQL Playground will be available at `http://localhost:4000/graphql`.
+Access the application:
+- **React Frontend**: http://localhost:4000 or http://localhost:4001
+- **GraphQL Playground**: http://localhost:4000/graphql
+- **MongoDB Express**: http://localhost:8081
+- **Health Check**: http://localhost:4000/health
 
 ## API Endpoints
 

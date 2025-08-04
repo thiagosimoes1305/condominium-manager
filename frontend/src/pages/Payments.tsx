@@ -158,30 +158,20 @@ const PaymentStatusChip: React.FC<{ status: string }> = ({ status }) => {
 
 const formatDate = (dateString: string | null | undefined): string => {
   if (!dateString) return 'Not set';
-  
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      console.error('Invalid date string:', dateString);
-      return 'Invalid date';
-    }
-    
-    // Adjust for timezone offset and format
-    const adjustedDate = new Date(
-      date.getTime() - date.getTimezoneOffset() * 60000
-    );
-    
-    return adjustedDate.toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  } catch (error) {
-    console.error('Date parsing error:', error);
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.error('Invalid date:', dateString);
     return 'Invalid date';
   }
+
+  return date.toLocaleString('pt-PT', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
 const Payments: React.FC = () => {
