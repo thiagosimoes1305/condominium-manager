@@ -253,14 +253,41 @@ const ApartmentOwners: React.FC = () => {
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4">Apartment Owners</Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-        >
-          Add Owner
-        </Button>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={5}>
+            <Typography variant="h4">Apartment Owners</Typography>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Filter by</InputLabel>
+              <Select
+                value={formData.buildingId}
+                label="Filter by"
+                
+              >
+                <MenuItem value="">
+                  <em>No building assigned</em>
+                </MenuItem>
+                {buildingsData?.buildings.map((building: Building) => (
+                  <MenuItem key={building.id} value={building.id}>
+                    {building.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Box display="flex" justifyContent={{ xs: 'center', md: 'flex-end' }}>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => handleOpenDialog()}
+              >
+                Add Owner
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
 
       <Grid container spacing={3}>
