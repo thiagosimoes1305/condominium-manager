@@ -5,8 +5,14 @@ A node_modulos subiu para o github, isso não é uma boa prática, deixa o fork 
 
 Fazer o projeto funcionar também não deu certo, precisei de comandos adicionais e um arquivo docker-composer.yml para rodar uma imagem mongodb, é melhor para quando se está a usar o Docker, fica tudo dentro do docker. Portanto, corrigi o ficheiro README-v1.md.
 
-## Sobre o BUG.
+## Sobre o BUG
 O que diz a issue: 
 "Foi-nos indicado pelos nossos colaboradores que de um momento para o outro os pagamentos deixaram de apresentar as datas corretas, infelizmente não conseguimos obter mais detalhes. A tua tarefa é identificar se realmente existe algum problema e caso exista, corrigi-lo."
 
 Minha resposta: Como não sei como era antes e como está agora para saber o que houve, o que posso dizer é que: se estamos a funcionar a aplicação em Portugal, a função formatDate() em todos os ficheiros está apontando para o relógio universal, portanto está a mostar horas erradas. Otimizei a função somente no ficheiro de Payments.tsx e coloquei o fuso horário de Lisboa. Caso esse seja o problema relatado, agora todo pagamento mostra exatamente a hora que foi registado. Se realmente este for o problema (das horas), sugiro unificar todas as funções formatDate() em um únifo ficheiro (pois ela esta em muitos fichieros) e com isto ficam todos corrigidos.
+
+## Nova Feature
+O que diz a issue:
+Atualmente, conseguimos listar prédios, apartamento e condominios, no entanto não estão filtrados, a tua tarefa é implementar um filtro por prédio na página de apartamentos.
+
+Minha resposta: Adaptei o topo da página de Apartamentos e coloquei um filtro por Prédio, depois eu reparei que já existia um resolver de filtro apartmentOwnersByBuilding(), decidir usa-lo. Modifiquei as chamadas para quando houver filtro e aparecer os resultados.
