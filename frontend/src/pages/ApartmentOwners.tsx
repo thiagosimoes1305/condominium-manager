@@ -89,6 +89,24 @@ const GET_BUILDINGS = gql`
   }
 `;
 
+const GET_OWNERS_BY_BUILDING = gql`
+  query GetOwnersByBuilding($buildingId: ID!) {
+    apartmentOwnersByBuilding(buildingId: $buildingId) {
+      id
+      name
+      email
+      apartmentNumber
+      building {
+        id
+        name
+      }
+      phoneNumber
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 const CREATE_APARTMENT_OWNER = gql`
   mutation CreateApartmentOwner($input: CreateApartmentOwnerInput!) {
     createApartmentOwner(input: $input) {
@@ -133,6 +151,7 @@ interface ApartmentOwner {
   apartmentNumber: string;
   buildingId?: string;
   building?: Building;
+  getBuildingId?: string;
   phoneNumber?: string;
   createdAt: string;
   updatedAt: string;
@@ -143,6 +162,7 @@ interface ApartmentOwnerFormData {
   email: string;
   apartmentNumber: string;
   buildingId: string;
+  getBuildingId: string;
   phoneNumber: string;
 }
 
@@ -154,14 +174,27 @@ const ApartmentOwners: React.FC = () => {
     email: '',
     apartmentNumber: '',
     buildingId: '',
+    getBuildingId: '',
     phoneNumber: '',
   });
 
-  const { loading, error, data, refetch } = useQuery(GET_APARTMENT_OWNERS);
+  const { data: allOwnersData, error: errorAllOwners, loading: loadingAllOwners, refetch: refetchAllOwners } = useQuery(GET_APARTMENT_OWNERS);
   const { data: buildingsData } = useQuery(GET_BUILDINGS);
+
+  const { data: filteredOwnersData, loading: loadingFiltered } = useQuery(GET_OWNERS_BY_BUILDING, {
+    variables: { buildingId: formData.buildingId },
+    skip: !formData.buildingId,
+  });
+
   const [createOwner] = useMutation(CREATE_APARTMENT_OWNER);
   const [updateOwner] = useMutation(UPDATE_APARTMENT_OWNER);
   const [deleteOwner] = useMutation(DELETE_APARTMENT_OWNER);
+
+  const owners = formData.buildingId
+    ? filteredOwnersData?.apartmentOwnersByBuilding
+    : allOwnersData?.apartmentOwners;
+
+  const loading = formData.buildingId ? loadingFiltered : loadingAllOwners;
 
   const handleOpenDialog = (owner?: ApartmentOwner) => {
     if (owner) {
@@ -171,6 +204,7 @@ const ApartmentOwners: React.FC = () => {
         email: owner.email,
         apartmentNumber: owner.apartmentNumber,
         buildingId: owner.buildingId || '',
+        getBuildingId: owner.getBuildingId || '',
         phoneNumber: owner.phoneNumber || '',
       });
     } else {
@@ -180,6 +214,7 @@ const ApartmentOwners: React.FC = () => {
         email: '',
         apartmentNumber: '',
         buildingId: '',
+        getBuildingId: '',
         phoneNumber: '',
       });
     }
@@ -194,6 +229,7 @@ const ApartmentOwners: React.FC = () => {
       email: '',
       apartmentNumber: '',
       buildingId: '',
+      getBuildingId: '',
       phoneNumber: '',
     });
   };
@@ -214,7 +250,7 @@ const ApartmentOwners: React.FC = () => {
           },
         });
       }
-      refetch();
+      refetchAllOwners();
       handleCloseDialog();
     } catch (error) {
       console.error('Error saving apartment owner:', error);
@@ -227,7 +263,7 @@ const ApartmentOwners: React.FC = () => {
         await deleteOwner({
           variables: { id },
         });
-        refetch();
+        refetchAllOwners();
       } catch (error) {
         console.error('Error deleting apartment owner:', error);
       }
@@ -242,10 +278,10 @@ const ApartmentOwners: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (errorAllOwners) {
     return (
       <Alert severity="error">
-        Error loading apartment owners: {error.message}
+        Error loading apartment owners: {errorAllOwners.message}
       </Alert>
     );
   }
@@ -263,10 +299,12 @@ const ApartmentOwners: React.FC = () => {
               <Select
                 value={formData.buildingId}
                 label="Filter by"
-                
+                onChange={(e: SelectChangeEvent) =>
+                  setFormData((prev) => ({ ...prev, buildingId: e.target.value }))
+                }
               >
                 <MenuItem value="">
-                  <em>No building assigned</em>
+                  <em>All buildings</em>
                 </MenuItem>
                 {buildingsData?.buildings.map((building: Building) => (
                   <MenuItem key={building.id} value={building.id}>
@@ -291,7 +329,7 @@ const ApartmentOwners: React.FC = () => {
       </Box>
 
       <Grid container spacing={3}>
-        {data?.apartmentOwners.map((owner: ApartmentOwner) => (
+        {owners?.map((owner: ApartmentOwner) => (
           <Grid item xs={12} sm={6} md={4} key={owner.id}>
             <Card>
               <CardContent>
